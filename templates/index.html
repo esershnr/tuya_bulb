@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuya Akıllı Ampul Kontrolü (Yerel LAN)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .power-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .btn-power {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: none;
+            background: #1e293b;
+            color: #64748b;
+            font-size: 2.2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-power.active {
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            color: #fff;
+            box-shadow: 0 0 30px var(--accent-glow), 0 8px 20px rgba(56, 189, 248, 0.4);
+            transform: scale(1.05);
+        }
+
+        .btn-power:active {
+            transform: scale(0.95);
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .control-group label span.val {
+            color: var(--accent);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #334155;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .preset-colors {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .color-btn {
+            height: 44px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-btn:hover {
+            transform: translateY(-2px);
+            border-color: white;
+        }
+
+        .badge-lan {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #4ade80;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #4ade80;
+        }
+
+        .status-msg {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 12px;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span class="badge-lan"><div class="dot"></div> %100 Yerel Ağ (No Cloud)</span>
+        <h1 style="margin-top: 10px;">Tuya Akıllı Ampul</h1>
+        <p>Yerel WiFi Kontrol Paneli</p>
+    </div>
+
+    <div class="power-section">
+        <button id="powerBtn" class="btn-power" onclick="togglePower()">⚡</button>
+    </div>
+
+    <div class="control-group">
+        <label>Parlaklık <span id="brightVal" class="val">%80</span></label>
+        <input type="range" id="brightRange" min="1" max="100" value="80" onchange="setBrightness(this.value)" oninput="document.getElementById('brightVal').innerText = '%' + this.value">
+    </div>
+
+    <div class="control-group">
+        <label>Sıcaklık (Sarı / Beyaz) <span id="tempVal" class="val">%50</span></label>
+        <input type="range" id="tempRange" min="0" max="100" value="50" onchange="setTemp(this.value)" oninput="document.getElementById('tempVal').innerText = '%' + this.value">
+    </div>
+
+    <div class="control-group">
+        <label>Renk Seçimi</label>
+        <div class="preset-colors">
+            <button class="color-btn" style="background: #ffffff;" onclick="setWhite()"></button>
+            <button class="color-btn" style="background: #ef4444;" onclick="setRGB(255, 0, 0)"></button>
+            <button class="color-btn" style="background: #22c55e;" onclick="setRGB(0, 255, 0)"></button>
+            <button class="color-btn" style="background: #3b82f6;" onclick="setRGB(0, 0, 255)"></button>
+            <button class="color-btn" style="background: #a855f7;" onclick="setRGB(168, 85, 247)"></button>
+        </div>
+    </div>
+
+    <div id="statusMsg" class="status-msg">Hazır</div>
+</div>
+
+<script>
+    let isOn = false;
+
+    async function sendAction(action, payload = {}) {
+        document.getElementById('statusMsg').innerText = 'İşleniyor...';
+        try {
+            const res = await fetch('/api/' + action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.status === 'ok') {
+                document.getElementById('statusMsg').innerText = 'Komut gönderildi!';
+            } else {
+                document.getElementById('statusMsg').innerText = 'Hata: ' + (data.message || 'Bilinmiyor');
+            }
+        } catch (e) {
+            document.getElementById('statusMsg').innerText = 'Bağlantı hatası!';
+        }
+    }
+
+    function togglePower() {
+        isOn = !isOn;
+        const btn = document.getElementById('powerBtn');
+        if (isOn) {
+            btn.classList.add('active');
+            sendAction('on');
+        } else {
+            btn.classList.remove('active');
+            sendAction('off');
+        }
+    }
+
+    function setBrightness(val) {
+        sendAction('brightness', { value: val });
+    }
+
+    function setTemp(val) {
+        sendAction('color_temp', { value: val });
+    }
+
+    function setRGB(r, g, b) {
+        sendAction('rgb', { r, g, b });
+    }
+
+    function setWhite() {
+        sendAction('white');
+    }
+</script>
+
+</body>
+</html>

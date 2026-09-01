@@ -1,0 +1,4 @@
+tinytuya
+flask
+windows_toasts
+python-dotenv

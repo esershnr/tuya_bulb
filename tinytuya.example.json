@@ -1,0 +1,6 @@
+{
+    "apiKey": "YOUR_TUYA_API_KEY_HERE",
+    "apiSecret": "YOUR_TUYA_API_SECRET_HERE",
+    "apiRegion": "eu",
+    "apiDeviceID": "YOUR_DEVICE_ID_HERE"
+}

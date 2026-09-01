@@ -1,0 +1,34 @@
+# Çevre Değişkenleri ve Gizli Bilgi Dosyaları
+.env
+.env.local
+.env.*.local
+*.env
+config.json
+tinytuya.json
+devices.json
+tuya-raw.json
+snapshot.json
+.state.json
+
+# Örnek şablon dosyalarını hariç tut (git'e dahil edilebilir)
+!.env.example
+!config.example.json
+!tinytuya.example.json
+!*.example.json
+
+# Python ve Sanal Ortamlar
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+ENV/
+env/
+
+# IDE / Editör
+.vscode/
+.idea/
+*.swp
+*.swo
+
