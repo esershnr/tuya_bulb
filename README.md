@@ -51,7 +51,7 @@ python main.py off
 python main.py toggle
 
 # Renk döngüsü (RGB Cycle)
-python main.py cycle
+python main.py cycle-rgb
 
 # Parlaklık ayarla (1 - 100)
 python main.py bright 75
@@ -61,9 +61,6 @@ python main.py temp 50
 
 # Özel RGB rengi
 python main.py rgb 255 0 0
-
-# Beyaz ışık modu
-python main.py white
 
 # Durum bilgisi
 python main.py status
