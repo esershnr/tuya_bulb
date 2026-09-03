@@ -67,7 +67,16 @@ python main.py white
 
 # Durum bilgisi
 python main.py status
+
+# Çoklu Parametre / Zincirleme Kullanım:
+python main.py toggle bright 50 temp 35
+python main.py on bright 80 temp 50
+python main.py bright 60 temp 20
 ```
+
+> ⚠️ **Önemli Donanım / Isınma Uyarısı:**
+> Bazı uygun fiyatlı / ekonomik akıllı ampullerde, cihaz uzun süre veya sürekli **%100 parlaklıkta** çalıştırıldığında lamba kasasında oluşan yüksek ısı nedeniyle dahili Wi-Fi modülü aşırı ısınabilir ve ampulün Wi-Fi bağlantısı kopabilir (cihaz çevrimdışı / offline kalabilir). Bu tür bağlantı kararsızlıklarını önlemek adına günlük kullanımda parlaklığı maksimum **%80 - %90** seviyelerinde tutmanız önerilir.
+
 
 #### 2. Cihaz Taraması & Otomatik IP Güncelleme (`discover.py`)
 
