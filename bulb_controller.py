@@ -13,8 +13,7 @@ CYCLE_COLORS = [
     {"type": "rgb", "value": (255, 255, 0), "name": "Sarı"},
     {"type": "rgb", "value": (0, 255, 255), "name": "Turkuaz"},
     {"type": "rgb", "value": (255, 0, 255), "name": "Mor"},
-    {"type": "rgb", "value": (255, 128, 0), "name": "Turuncu"},
-    {"type": "white", "brightness": 100, "color_temp": 0, "name": "Sıcak Beyaz"}
+    {"type": "rgb", "value": (255, 128, 0), "name": "Turuncu"}
 ]
 
 class TuyaBulbController:
