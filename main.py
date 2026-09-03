@@ -57,12 +57,11 @@ Komutlar:
   on                : Ampulü açar
   off               : Ampulü kapatır
   toggle            : Açık ise kapatır, kapalı ise açar (Varsayılan)
-  cycle             : Renkleri sırayla değiştirir (RGB Cycle)
+  cycle-rgb         : RGB renkleri sırayla değiştirir (Döngü)
   status            : Ampulün mevcut durumunu gösterir
   bright <1-100>    : Parlaklığı ayarlar (Örn: python main.py bright 75)
   temp <0-100>      : Beyaz renk sıcaklığını ayarlar (0=Sıcak/Sarı, 100=Soğuk/Beyaz)
   rgb <r> <g> <b>   : RGB rengi ayarlar (Örn: python main.py rgb 255 0 0)
-  white             : Beyaz moda geçer
 """)
 
 def main():
@@ -77,17 +76,13 @@ def main():
     bright_val = None
     temp_val = None
     rgb_val = None
-    has_white = False
 
     i = 0
     while i < len(args):
         cmd = args[i].lower()
 
-        if cmd in ['on', 'off', 'toggle', 'cycle', 'status']:
-            actions.append(cmd)
-            i += 1
-        elif cmd == 'white':
-            has_white = True
+        if cmd in ['on', 'off', 'toggle', 'cycle-rgb', 'cycle', 'status']:
+            actions.append('cycle-rgb' if cmd in ['cycle-rgb', 'cycle'] else cmd)
             i += 1
         elif cmd == 'bright':
             if i + 1 >= len(args):
@@ -143,11 +138,6 @@ def main():
         print("Hata: 'rgb' ve 'temp' aynı anda kullanılamaz! Renk sıcaklığı (temp) yalnızca beyaz ışık modunda geçerlidir.")
         return
 
-    # RGB ve Beyaz mod seçimi çelişkisi
-    if rgb_val is not None and has_white:
-        print("Hata: Hem 'rgb' hem 'white' aynı anda belirtilemez.")
-        return
-
     # --- 2. AMPUL İŞLEMLERİNİ YÜRÜTME ---
     try:
         bulb = TuyaBulbController()
@@ -159,7 +149,7 @@ def main():
     notifications = []
 
     try:
-        # Önce temel eylemleri işlet (on, off, toggle, cycle, status)
+        # Önce temel eylemleri işlet (on, off, toggle, cycle-rgb, status)
         for act in actions:
             if act == 'on':
                 bulb.turn_on()
@@ -169,7 +159,7 @@ def main():
                 bulb.turn_off()
                 print("Ampul KAPATILDI")
                 notifications.append("🌑 Ampul Kapatıldı")
-                if bright_val or temp_val or rgb_val or has_white:
+                if bright_val or temp_val or rgb_val:
                     print("Ampul kapatıldığı için renk/parlaklık ayarları uygulanmadı.")
                 send_notification("🌑 Ampul Kapatıldı")
                 return
@@ -181,11 +171,11 @@ def main():
                 else:
                     print("Ampul KAPATILDI")
                     notifications.append("🌑 Ampul Kapatıldı")
-                    if bright_val or temp_val or rgb_val or has_white:
+                    if bright_val or temp_val or rgb_val:
                         print("Ampul kapatıldığı için renk/parlaklık ayarları uygulanmadı.")
                     send_notification("🌑 Ampul Kapatıldı")
                     return
-            elif act == 'cycle':
+            elif act == 'cycle-rgb':
                 item = bulb.cycle_color()
                 print(f"Renk değiştirildi: {item['name']}")
                 notifications.append(f"🎨 Renk: {item['name']}")
@@ -212,10 +202,6 @@ def main():
             bulb.set_color_temp(temp_val)
             print(f"Renk sıcaklığı %{temp_val} yapıldı.")
             notifications.append(f"🌡️ Sıcaklık %{temp_val}")
-        elif has_white:
-            bulb.set_white()
-            print("Beyaz ışık moduna geçildi.")
-            notifications.append("💡 Beyaz Mod")
 
         if notifications:
             send_notification(" | ".join(notifications))
